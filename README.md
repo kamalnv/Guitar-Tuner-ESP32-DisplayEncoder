@@ -3,7 +3,7 @@
 A full-featured guitar tuner running on ESP32 with OLED display and rotary encoder for standard 6 string Guitar, 
 has a Audio module for a mic, 
 
-if you are looking for bass guitar or 7 string guitar you can try the V2 Branch
+if you are looking for bass Guitar, 7 string guitar or as a Pedal you can try the V2 Branch
 
 
 This code is by Emergent.sh use it at your descrete & risks.
