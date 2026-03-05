@@ -77,6 +77,11 @@ enum TunerMode {
   MODE_DROP_C,
   MODE_OPEN_G,
   MODE_DADGAD,
+  MODE_7STRING,
+  MODE_7STRING_DROP_A,
+  MODE_BASS_4,
+  MODE_BASS_5,
+  MODE_BASS_DROP_D,
   MODE_COUNT
 };
 
@@ -87,7 +92,28 @@ const char* modeNames[] = {
   "HALF DOWN",
   "DROP C",
   "OPEN G",
-  "DADGAD"
+  "DADGAD",
+  "7-STRING",
+  "7STR DROP A",
+  "BASS 4-STR",
+  "BASS 5-STR",
+  "BASS DROP D"
+};
+
+// Number of strings for each mode
+const int stringCounts[] = {
+  0,  // Chromatic
+  6,  // Standard
+  6,  // Drop D
+  6,  // Half Down
+  6,  // Drop C
+  6,  // Open G
+  6,  // DADGAD
+  7,  // 7-String
+  7,  // 7-String Drop A
+  4,  // Bass 4-string
+  5,  // Bass 5-string
+  4   // Bass Drop D
 };
 
 TunerMode currentMode = MODE_CHROMATIC;
@@ -105,42 +131,67 @@ const float A4_FREQ = 440.0;
 // Values are MIDI note numbers
 
 // Standard: E2 A2 D3 G3 B3 E4
-const int TUNING_STANDARD[] = {40, 45, 50, 55, 59, 64};
+const int TUNING_STANDARD[] = {40, 45, 50, 55, 59, 64, 0};
 
 // Drop D: D2 A2 D3 G3 B3 E4
-const int TUNING_DROP_D[] = {38, 45, 50, 55, 59, 64};
+const int TUNING_DROP_D[] = {38, 45, 50, 55, 59, 64, 0};
 
 // Half Step Down: Eb2 Ab2 Db3 Gb3 Bb3 Eb4
-const int TUNING_HALF_DOWN[] = {39, 44, 49, 54, 58, 63};
+const int TUNING_HALF_DOWN[] = {39, 44, 49, 54, 58, 63, 0};
 
 // Drop C: C2 G2 C3 F3 A3 D4
-const int TUNING_DROP_C[] = {36, 43, 48, 53, 57, 62};
+const int TUNING_DROP_C[] = {36, 43, 48, 53, 57, 62, 0};
 
 // Open G: D2 G2 D3 G3 B3 D4
-const int TUNING_OPEN_G[] = {38, 43, 50, 55, 59, 62};
+const int TUNING_OPEN_G[] = {38, 43, 50, 55, 59, 62, 0};
 
 // DADGAD: D2 A2 D3 G3 A3 D4
-const int TUNING_DADGAD[] = {38, 45, 50, 55, 57, 62};
+const int TUNING_DADGAD[] = {38, 45, 50, 55, 57, 62, 0};
+
+// 7-String Standard: B1 E2 A2 D3 G3 B3 E4
+const int TUNING_7STRING[] = {35, 40, 45, 50, 55, 59, 64};
+
+// 7-String Drop A: A1 E2 A2 D3 G3 B3 E4
+const int TUNING_7STRING_DROP_A[] = {33, 40, 45, 50, 55, 59, 64};
+
+// Bass 4-String Standard: E1 A1 D2 G2
+const int TUNING_BASS_4[] = {28, 33, 38, 43, 0, 0, 0};
+
+// Bass 5-String Standard: B0 E1 A1 D2 G2
+const int TUNING_BASS_5[] = {23, 28, 33, 38, 43, 0, 0};
+
+// Bass 4-String Drop D: D1 A1 D2 G2
+const int TUNING_BASS_DROP_D[] = {26, 33, 38, 43, 0, 0, 0};
 
 const int* tunings[] = {
-  NULL,  // Chromatic has no preset
+  NULL,              // Chromatic has no preset
   TUNING_STANDARD,
   TUNING_DROP_D,
   TUNING_HALF_DOWN,
   TUNING_DROP_C,
   TUNING_OPEN_G,
-  TUNING_DADGAD
+  TUNING_DADGAD,
+  TUNING_7STRING,
+  TUNING_7STRING_DROP_A,
+  TUNING_BASS_4,
+  TUNING_BASS_5,
+  TUNING_BASS_DROP_D
 };
 
-// String names for each tuning
-const char* stringNames[][6] = {
-  {"", "", "", "", "", ""},           // Chromatic
-  {"E2", "A2", "D3", "G3", "B3", "E4"}, // Standard
-  {"D2", "A2", "D3", "G3", "B3", "E4"}, // Drop D
-  {"Eb", "Ab", "Db", "Gb", "Bb", "Eb"}, // Half Down
-  {"C2", "G2", "C3", "F3", "A3", "D4"}, // Drop C
-  {"D2", "G2", "D3", "G3", "B3", "D4"}, // Open G
-  {"D2", "A2", "D3", "G3", "A3", "D4"}  // DADGAD
+// String names for each tuning (max 7 strings)
+const char* stringNames[][7] = {
+  {"", "", "", "", "", "", ""},              // Chromatic
+  {"E2", "A2", "D3", "G3", "B3", "E4", ""},  // Standard
+  {"D2", "A2", "D3", "G3", "B3", "E4", ""},  // Drop D
+  {"Eb", "Ab", "Db", "Gb", "Bb", "Eb", ""},  // Half Down
+  {"C2", "G2", "C3", "F3", "A3", "D4", ""},  // Drop C
+  {"D2", "G2", "D3", "G3", "B3", "D4", ""},  // Open G
+  {"D2", "A2", "D3", "G3", "A3", "D4", ""},  // DADGAD
+  {"B1", "E2", "A2", "D3", "G3", "B3", "E4"}, // 7-String
+  {"A1", "E2", "A2", "D3", "G3", "B3", "E4"}, // 7-String Drop A
+  {"E1", "A1", "D2", "G2", "", "", ""},       // Bass 4-String
+  {"B0", "E1", "A1", "D2", "G2", "", ""},     // Bass 5-String
+  {"D1", "A1", "D2", "G2", "", "", ""}        // Bass Drop D
 };
 
 // ============== FUNCTION PROTOTYPES ==============
@@ -256,10 +307,11 @@ void loop() {
       currentMode = (TunerMode)newMode;
       drawMenu();
     } else if (currentMode != MODE_CHROMATIC) {
-      // Navigate strings in guitar mode
+      // Navigate strings in guitar/bass mode
+      int numStrings = stringCounts[currentMode];
       selectedString += diff;
-      if (selectedString < 0) selectedString = 5;
-      if (selectedString > 5) selectedString = 0;
+      if (selectedString < 0) selectedString = numStrings - 1;
+      if (selectedString >= numStrings) selectedString = 0;
     }
   }
   
@@ -276,7 +328,7 @@ void loop() {
   if (bufferReady && !inMenu) {
     float frequency = detectPitch(audioBuffer, BUFFER_SIZE);
     
-    if (frequency > 60 && frequency < 1200) {  // Valid guitar range
+    if (frequency > 25 && frequency < 1200) {  // Valid guitar/bass range (B0 = 30.87Hz)
       if (currentMode == MODE_CHROMATIC) {
         int note, octave;
         float cents;
@@ -309,9 +361,9 @@ float detectPitch(int16_t* buffer, int length) {
   float maxCorr = 0;
   int maxLag = 0;
   
-  // Search in the range of guitar frequencies (60Hz - 1200Hz)
+  // Search in the range of guitar/bass frequencies (25Hz - 1200Hz)
   int minLag = SAMPLE_RATE / 1200;  // Highest frequency
-  int maxLagSearch = SAMPLE_RATE / 60;   // Lowest frequency
+  int maxLagSearch = SAMPLE_RATE / 25;   // Lowest frequency (for 5-string bass B0)
   
   if (maxLagSearch > length / 2) maxLagSearch = length / 2;
   
@@ -390,10 +442,12 @@ void findClosestNote(float freq, int* note, int* octave, float* cents) {
 
 void findClosestStringNote(float freq, int tuningIndex, int* stringNum, float* cents) {
   const int* tuning = tunings[tuningIndex];
+  int numStrings = stringCounts[tuningIndex];
   float minCentsDiff = 9999;
   int closestString = 0;
   
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < numStrings; i++) {
+    if (tuning[i] == 0) continue;  // Skip empty slots
     float targetFreq = midiToFreq(tuning[i]);
     float centsDiff = 1200 * log2(freq / targetFreq);
     
@@ -487,11 +541,13 @@ void drawTuner(float frequency, int note, int octave, float cents) {
 void drawGuitarTuner(float frequency, int stringNum, float cents) {
   display.clearDisplay();
   
+  int numStrings = stringCounts[currentMode];
+  
   // String indicator
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.print("STR ");
-  display.print(6 - stringNum);  // String 6 to 1
+  display.print(numStrings - stringNum);  // String N to 1
   display.print(":");
   
   // String note name

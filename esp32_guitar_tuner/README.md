@@ -87,15 +87,20 @@ GPIO34  -----> OUT (Analog output)
 
 ### Tuning Modes
 
-| Mode | Description | Strings (6→1) |
-|------|-------------|---------------|
-| CHROMATIC | All 12 notes | Any note |
-| STANDARD | Standard tuning | E A D G B E |
-| DROP D | Drop D tuning | D A D G B E |
-| HALF DOWN | Half step down | Eb Ab Db Gb Bb Eb |
-| DROP C | Drop C tuning | C G C F A D |
-| OPEN G | Open G tuning | D G D G B D |
-| DADGAD | Celtic tuning | D A D G A D |
+| Mode | Description | Strings |
+|------|-------------|---------|
+| **CHROMATIC** | All 12 notes | Any note |
+| **STANDARD** | Standard guitar | E A D G B E |
+| **DROP D** | Drop D guitar | D A D G B E |
+| **HALF DOWN** | Half step down | Eb Ab Db Gb Bb Eb |
+| **DROP C** | Drop C guitar | C G C F A D |
+| **OPEN G** | Open G guitar | D G D G B D |
+| **DADGAD** | Celtic tuning | D A D G A D |
+| **7-STRING** | 7-string standard | B E A D G B E |
+| **7STR DROP A** | 7-string Drop A | A E A D G B E |
+| **BASS 4-STR** | 4-string bass | E A D G |
+| **BASS 5-STR** | 5-string bass | B E A D G |
+| **BASS DROP D** | Bass Drop D | D A D G |
 
 ### Display Information
 
