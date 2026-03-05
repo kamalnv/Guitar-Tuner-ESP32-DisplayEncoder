@@ -74,12 +74,14 @@
  * └─────────────────┴─────────────┴─────────────────────────────┘
  * 
  * ┌─────────────────┬─────────────┬─────────────────────────────┐
- * │ Microphone      │ ESP32 Pin   │ Notes                       │
+ * │ Guitar Preamp   │ ESP32 Pin   │ Notes                       │
  * ├─────────────────┼─────────────┼─────────────────────────────┤
- * │ VCC             │ 3.3V        │ Power (some accept 5V)      │
- * │ GND             │ GND         │ Ground                      │
- * │ OUT             │ GPIO 34     │ Analog audio signal (ADC1)  │
+ * │ Preamp OUT      │ GPIO 34     │ Via 47kΩ protection resistor│
+ * │ Op-amp VCC      │ 3.3V        │ TL072/LM358 pin 8           │
+ * │ Op-amp GND      │ GND         │ TL072/LM358 pin 4           │
  * └─────────────────┴─────────────┴─────────────────────────────┘
+ * 
+ * See GUITAR_INPUT_CIRCUIT.h for complete preamp schematic!
  * 
  * 
  * IMPORTANT NOTES:
@@ -92,11 +94,11 @@
  * 3. I2C default address for SSD1306 is usually 0x3C
  *    If display doesn't work, try 0x3D
  * 
- * 4. For best audio quality:
- *    - Use MAX9814 (auto gain) or MAX4466 (adjustable gain)
- *    - Keep mic wires short
- *    - Position mic close to guitar (15-30cm)
- *    - Avoid noisy power supplies
+ * 4. For best audio quality with direct guitar input:
+ *    - Use TL072 (better audio) or LM358 (cheaper)
+ *    - Keep wires short between preamp and ESP32
+ *    - Use shielded cable if possible
+ *    - Position preamp close to ESP32
  * 
  * 5. The OLED+Encoder module's 9-pin header typically has:
  *    Pin 1: VCC
@@ -111,21 +113,25 @@
  *    CHECK YOUR MODULE'S ACTUAL PINOUT - it may vary!
  * 
  * 
- * RECOMMENDED MICROPHONE MODULES:
- * ==============================
+ * GUITAR INPUT OPTIONS:
+ * =====================
  * 
- * 1. MAX9814 - Auto Gain Control
- *    - Best for varying volume levels
- *    - 3 gain settings (40dB, 50dB, 60dB)
- *    - Clean output
+ * OPTION 1: Active Preamp (Recommended)
+ *    - Uses TL072 or LM358 op-amp
+ *    - Best signal quality
+ *    - Works with all pickup types
+ *    - See GUITAR_INPUT_CIRCUIT.h for schematic
  * 
- * 2. MAX4466 - Adjustable Gain
- *    - Trimmer for gain adjustment
- *    - Good for fine-tuning sensitivity
+ * OPTION 2: Passive Input (Simpler, Lower Quality)
+ *    - No amplification, just bias
+ *    - Works best with hot pickups (humbuckers)
+ *    - May struggle with single coils
  * 
- * 3. Generic Electret Module
- *    - Cheapest option
- *    - May need gain adjustment circuit
- *    - Works but less consistent
+ *    GUITAR ──[10µF]──┬──[100kΩ]──(+3.3V)
+ *    TIP              │
+ *                     ├──[100kΩ]──(GND)
+ *                     │
+ *                     └──[47kΩ]──> GPIO34
+ *    SLEEVE ─────────────────────> GND
  * 
  */

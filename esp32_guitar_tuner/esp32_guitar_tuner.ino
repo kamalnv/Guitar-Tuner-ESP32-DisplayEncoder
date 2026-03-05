@@ -5,11 +5,11 @@
  *   - ESP32 DevKit / Generic ESP32
  *   - 0.96" OLED Display (SSD1306, 128x32, I2C)
  *   - EC11 Rotary Encoder with push button
- *   - Electret Microphone (MAX9814/MAX4466 or similar)
+ *   - Direct Guitar Input with Preamp Circuit (TL072/LM358)
  * 
  * Features:
  *   - Chromatic tuner mode (all 12 notes)
- *   - Multiple guitar tuning presets
+ *   - Multiple guitar tuning presets (6-string, 7-string, bass)
  *   - Real-time pitch detection using autocorrelation
  *   - Visual cents deviation display
  *   - Rotary encoder for menu navigation
@@ -22,8 +22,10 @@
  *     - CLK (A): GPIO 32
  *     - DT (B):  GPIO 33
  *     - SW:     GPIO 25
- *   Microphone:
+ *   Guitar Input (via preamp):
  *     - OUT:    GPIO 34 (ADC1_CH6)
+ * 
+ * See GUITAR_INPUT_CIRCUIT.h for preamp schematic
  */
 
 #include <Wire.h>
@@ -40,7 +42,7 @@
 #define ENCODER_DT  33
 #define ENCODER_SW  25
 
-#define MIC_PIN 34
+#define MIC_PIN 34  // Guitar input (via preamp circuit)
 
 // ============== DISPLAY CONFIG ==============
 #define SCREEN_WIDTH 128
@@ -51,13 +53,18 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // ============== AUDIO SAMPLING CONFIG ==============
-#define SAMPLE_RATE 8000
-#define SAMPLES 1024
+// Optimized for direct guitar input with preamp
+#define SAMPLE_RATE 9600      // Higher sample rate for better accuracy
+#define SAMPLES 2048          // Larger buffer for low frequencies (bass)
 #define BUFFER_SIZE SAMPLES
 
 int16_t audioBuffer[BUFFER_SIZE];
 volatile int sampleIndex = 0;
 volatile bool bufferReady = false;
+
+// Signal detection threshold (adjustable for different pickup outputs)
+#define SIGNAL_THRESHOLD 30   // Lower threshold for clean guitar signal
+#define NOISE_GATE 20         // Minimum RMS to consider valid signal
 
 hw_timer_t *sampleTimer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
@@ -382,7 +389,7 @@ float detectPitch(int16_t* buffer, int length) {
   }
   float rms = sqrt((float)energy / length);
   
-  if (rms < 50) {  // Too quiet
+  if (rms < NOISE_GATE) {  // Too quiet - noise gate
     return 0;
   }
   
@@ -410,7 +417,7 @@ float detectPitch(int16_t* buffer, int length) {
     }
   }
   
-  if (maxCorr < 0.5 || maxLag == 0) {
+  if (maxCorr < 0.4 || maxLag == 0) {  // Lowered threshold for cleaner guitar signal
     return 0;
   }
   

@@ -33,6 +33,7 @@ Hardware reference: https://robu.in/product/0-96-inch-oled-display-screen-rotary
 - [x] 6-string guitar tunings: Standard, Drop D, Half-Step Down, Drop C, Open G, DADGAD
 - [x] 7-string guitar tunings: Standard, Drop A (Jan 2026)
 - [x] Bass guitar tunings: 4-string, 5-string, Drop D (Jan 2026)
+- [x] Direct guitar input with preamp circuit (Jan 2026)
 - [x] Wiring guide and documentation
 
 ## Tuning Modes (12 total)

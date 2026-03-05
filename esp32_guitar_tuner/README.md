@@ -10,7 +10,19 @@ A full-featured guitar tuner running on ESP32 with OLED display and rotary encod
    - Display: SSD1306, 128x32 pixels, I2C interface
    - Rotary Encoder: EC11 with push button
    - [Product Link](https://robu.in/product/0-96-inch-oled-display-screen-rotary-encoder/)
-3. **Electret Microphone Module** (MAX9814 or MAX4466 recommended)
+3. **Direct Guitar Input Circuit** (see below)
+
+### Guitar Input Preamp Components
+| Qty | Component | Value | Notes |
+|-----|-----------|-------|-------|
+| 1 | TL072 or LM358 | - | Dual op-amp IC |
+| 1 | 1/4" Mono Audio Jack | - | Guitar input |
+| 1 | Resistor | 1MΩ | Input impedance |
+| 2 | Resistor | 100kΩ | Bias divider + feedback |
+| 1 | Resistor | 10kΩ | Feedback |
+| 1 | Resistor | 47kΩ | Output protection |
+| 2 | Electrolytic Capacitor | 10µF | Coupling caps |
+| 1 | Ceramic Capacitor | 100nF | Power decoupling |
 
 ### Wiring Diagram
 
@@ -25,12 +37,45 @@ GPIO32  -----> CLK (Encoder A)
 GPIO33  -----> DT  (Encoder B)
 GPIO25  -----> SW  (Encoder Button)
 
-ESP32          Microphone Module
-------         -----------------
-3.3V    -----> VCC
-GND     -----> GND
-GPIO34  -----> OUT (Analog output)
+ESP32          Guitar Preamp Circuit Output
+------         ----------------------------
+3.3V    -----> Op-amp VCC (pin 8)
+GND     -----> Op-amp GND (pin 4)
+GPIO34  -----> Preamp output (via 47kΩ)
 ```
+
+### Guitar Input Preamp Schematic
+```
+                      +3.3V
+                        │
+                   ┌────┴────┐
+                   │  100kΩ  │
+                   └────┬────┘
+                        │ (1.65V bias)
+                   ┌────┴────┐
+                   │  100kΩ  │
+                   └────┬────┘
+                        │
+                       GND
+
+  GUITAR    1MΩ     10µF    ┌─────────────┐
+  TIP ────[====]───┤├──●────┤ 3   TL072  1├────┤├────[47kΩ]───> GPIO34
+                        │    │      A      │   10µF
+                   (bias)────┤ 2          8├────(+3.3V)
+                             │             │
+                         ┌───┤            4├────(GND)
+                         │   └─────────────┘
+                       10kΩ        │
+                         │       100kΩ
+                        GND        │
+                                   └──────────────┘
+                                   (feedback loop)
+
+  GUITAR
+  SLEEVE ──────────────────────────────────────────> GND
+```
+
+See `GUITAR_INPUT_CIRCUIT.h` for detailed schematic and breadboard layout.
 
 ### Pin Summary
 | Function | ESP32 Pin |
@@ -40,7 +85,7 @@ GPIO34  -----> OUT (Analog output)
 | Encoder CLK | GPIO 32 |
 | Encoder DT  | GPIO 33 |
 | Encoder SW  | GPIO 25 |
-| Mic OUT  | GPIO 34   |
+| Guitar IN | GPIO 34  |
 
 ## Software Setup
 
@@ -151,16 +196,26 @@ GPIO34  -----> OUT (Analog output)
 - Ensure pull-up resistors are enabled (internal pull-ups used)
 
 ### No Pitch Detection
-- Check microphone connections
-- Ensure microphone gain is adequate
-- Play note closer to microphone
-- Check for environmental noise
+- Check guitar cable connection
+- Verify preamp circuit is powered (3.3V to op-amp)
+- Check 10µF capacitors are correct polarity
+- Ensure op-amp output reaches GPIO34
+- Try a different guitar/cable
 
 ### Inaccurate Readings
-- Allow mic to warm up
-- Play notes clearly and sustain
-- Avoid background noise
-- Ensure good power supply
+- Adjust preamp gain if signal clips (reduce 100kΩ feedback resistor)
+- Check for loose connections in preamp circuit
+- Ensure good solder joints
+- Use shielded cable from preamp to ESP32
+
+### Signal Too Weak
+- Increase gain: use 220kΩ instead of 100kΩ for feedback
+- Check guitar volume knob is up
+- Verify 1MΩ input resistor value
+
+### Signal Clipping (Distorted)
+- Decrease gain: use 47kΩ instead of 100kΩ for feedback
+- For hot humbuckers, gain of 5-6 may be sufficient
 
 ## Technical Details
 
