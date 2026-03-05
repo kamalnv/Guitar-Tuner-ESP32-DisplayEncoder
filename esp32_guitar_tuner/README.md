@@ -12,16 +12,17 @@ A full-featured guitar tuner running on ESP32 with OLED display and rotary encod
    - [Product Link](https://robu.in/product/0-96-inch-oled-display-screen-rotary-encoder/)
 3. **Direct Guitar Input Circuit** (see below)
 
-### Guitar Input Preamp Components
+### Guitar Input Preamp Components (with Buffered Output)
 | Qty | Component | Value | Notes |
 |-----|-----------|-------|-------|
-| 1 | TL072 or LM358 | - | Dual op-amp IC |
-| 1 | 1/4" Mono Audio Jack | - | Guitar input |
+| 1 | TL072 Dual Op-Amp | - | Both op-amps used |
+| 1 | 1/4" Mono Audio Jack | - | Guitar INPUT |
+| 1 | 1/4" Mono Audio Jack | - | Amp OUTPUT |
 | 1 | Resistor | 1MΩ | Input impedance |
-| 2 | Resistor | 100kΩ | Bias divider + feedback |
-| 1 | Resistor | 10kΩ | Feedback |
-| 1 | Resistor | 47kΩ | Output protection |
-| 2 | Electrolytic Capacitor | 10µF | Coupling caps |
+| 3 | Resistor | 100kΩ | Bias divider + feedback |
+| 1 | Resistor | 10kΩ | Gain feedback |
+| 1 | Resistor | 47kΩ | ADC protection |
+| 3 | Electrolytic Capacitor | 10µF | Coupling caps |
 | 1 | Ceramic Capacitor | 100nF | Power decoupling |
 
 ### Wiring Diagram
@@ -44,35 +45,56 @@ GND     -----> Op-amp GND (pin 4)
 GPIO34  -----> Preamp output (via 47kΩ)
 ```
 
-### Guitar Input Preamp Schematic
+### Guitar Input Preamp Schematic (with Buffered Output to Amp)
 ```
-                      +3.3V
-                        │
-                   ┌────┴────┐
-                   │  100kΩ  │
-                   └────┬────┘
-                        │ (1.65V bias)
-                   ┌────┴────┐
-                   │  100kΩ  │
-                   └────┬────┘
-                        │
-                       GND
+   SIGNAL FLOW:
+   
+   GUITAR ──> [INPUT JACK] ──┬──> [OP-AMP A: Gain=11] ──> ESP32 (tuning)
+              (1/4" jack)    │
+                             └──> [OP-AMP B: Buffer]  ──> [OUTPUT JACK] ──> AMP
+                                                          (1/4" jack)
 
-  GUITAR    1MΩ     10µF    ┌─────────────┐
-  TIP ────[====]───┤├──●────┤ 3   TL072  1├────┤├────[47kΩ]───> GPIO34
-                        │    │      A      │   10µF
-                   (bias)────┤ 2          8├────(+3.3V)
-                             │             │
-                         ┌───┤            4├────(GND)
-                         │   └─────────────┘
-                       10kΩ        │
-                         │       100kΩ
-                        GND        │
-                                   └──────────────┘
-                                   (feedback loop)
+   OP-AMP A (Tuner - pins 1,2,3):
+   - Amplifies guitar signal 11x for ESP32 ADC
+   - Adds 1.65V DC bias
 
-  GUITAR
-  SLEEVE ──────────────────────────────────────────> GND
+   OP-AMP B (Buffer - pins 5,6,7):
+   - Unity gain (1x) buffer
+   - Low impedance output to amp
+   - No tone loss through long cables
+```
+
+```
+                        +3.3V
+                          │
+                     ┌────┴────┐
+                     │  100kΩ  │
+                     └────┬────┘
+                          │ VREF (1.65V)
+                     ┌────┴────┐
+                     │  100kΩ  │
+                     └────┬────┘
+                          │
+                         GND
+
+  GUITAR     1MΩ      10µF     ┌─────────────────┐
+  INPUT ────[====]────┤├───┬───┤3    TL072     1├────┤├────[47kΩ]───> GPIO34
+  TIP                       │   │    OP-AMP A    │   10µF
+                      VREF──┴───┤2               │
+                                │           ┌────┤
+                              10kΩ        100kΩ  │ (feedback)
+                                │           │    │
+                               GND──────────┴────┘
+                                
+                           10µF ┌─────────────────┐         10µF
+  (from junction) ─────────┤├───┤5    TL072     7├─────────┤├────> OUTPUT
+                                │    OP-AMP B    │                  TO AMP
+                            ┌───┤6               │
+                            │   └────────────────┘
+                            └────────┘ (unity gain: pin 6 to pin 7)
+                            
+  GUITAR INPUT SLEEVE ──────────────────────────────────────────> GND
+  AMP OUTPUT SLEEVE ────────────────────────────────────────────> GND
 ```
 
 See `GUITAR_INPUT_CIRCUIT.h` for detailed schematic and breadboard layout.
