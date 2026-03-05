@@ -1,6 +1,7 @@
 # ESP32 Guitar Tuner
 
 A full-featured guitar tuner running on ESP32 with OLED display and rotary encoder.
+This code is by Emergent.sh use it at your descrete & risks.
 
 ## Hardware Requirements
 
