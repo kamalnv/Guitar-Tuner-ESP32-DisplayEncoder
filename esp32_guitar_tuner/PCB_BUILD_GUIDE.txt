@@ -1,0 +1,199 @@
+ESP32 Guitar Tuner - PCB for 125B Enclosure
+============================================
+
+PCB DIMENSIONS: 100mm x 50mm (fits 125B with room for wiring)
+
+
+VISUAL PCB LAYOUT (1:1 SCALE GUIDE)
+===================================
+
+Print this at 100% scale to verify component fit.
+
+    0mm       20mm      40mm      60mm      80mm     100mm
+    |         |         |         |         |         |
+    ┌─────────────────────────────────────────────────┐ 50mm
+    │ ○                                             ○ │ M3
+    │ M3        ┌─OLED/ENC HEADER─┐                   │
+    │           │○ ○ ○ ○ ○ ○ ○    │                   │ 45mm
+    │           │G V C D K T S    │                   │
+    │           │N C L A L T W    │                   │
+    │           │D C L A K        │                   │
+    │           └─────────────────┘                   │ 40mm
+    │                                                 │
+    │                        ┌──────────────────────┐ │
+    │    ┌─────────┐         │                      │ │ 35mm
+    │    │ TL072   │         │   ESP-WROOM-32      │ │
+    │    │ ┌─────┐ │         │                      │ │
+    │    │ │1 ○ 8│ │         │   ○          ○      │ │ 30mm
+    │    │ │2   7│ │         │                      │ │
+    │    │ │3   6│ │         │                      │ │
+    │    │ │4   5│ │         │   ┌──────────────┐  │ │ 25mm
+    │    │ └─────┘ │         │   │   ANTENNA    │  │ │
+    │    └─────────┘         │   │    AREA      │  │ │
+    │                        │   │  (keep clear)│  │ │ 20mm
+    │                        └───┴──────────────┴──┘ │
+    │                                                 │
+    │    R1   R2   R3   R4   R5   R6                 │ 15mm
+    │    ░░   ░░   ░░   ░░   ░░   ░░                 │
+    │   1M  100k 100k  10k 100k  47k                 │
+    │                                                 │ 10mm
+    │    C1    C2    C3    C4                        │
+    │   ┌┴┐   ┌┴┐   ┌┴┐    ○                        │
+    │   │+│   │+│   │+│  100nF                      │  5mm
+    │   └─┘   └─┘   └─┘                              │
+    │   10µ   10µ   10µ                              │
+    │                                                 │
+    │ ○  ●IN   ●OUT                               ○ │  0mm
+    │ M3  PAD   PAD                               M3 │
+    └─────────────────────────────────────────────────┘
+
+
+DRILLING TEMPLATE FOR 125B ENCLOSURE
+====================================
+
+TOP (Lid):
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│              ┌─────────────────────┐                │
+│              │                     │ OLED Window    │
+│              │   28mm x 12mm       │ (rectangular   │
+│              │   (file/dremel)     │  cutout)       │
+│              └─────────────────────┘                │
+│                        ↓                            │
+│                        ○  7mm hole (encoder shaft)  │
+│                                                     │
+│                                                     │
+│                        ○  12mm hole (footswitch)    │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+
+LEFT SIDE:
+┌───────────┐
+│           │
+│     ○     │  10mm hole - INPUT JACK
+│           │  (center: 20mm from front, 15mm from bottom)
+│           │
+└───────────┘
+
+RIGHT SIDE:
+┌───────────┐
+│           │
+│     ○     │  10mm hole - OUTPUT JACK
+│           │  (center: 20mm from front, 15mm from bottom)
+│           │
+└───────────┘
+
+BACK (optional):
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│   ○  DC Jack (2.1mm) - 8mm hole                    │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+
+
+COMPONENT CONNECTIONS (Net List)
+================================
+
+TL072 Pin 1 (Out A)  → C3+ → R6 → GPIO34
+TL072 Pin 2 (Inv A)  → R4 (to GND) + R5 (to Pin 1)
+TL072 Pin 3 (Non A)  → C1- → VREF junction
+TL072 Pin 4 (V-)     → GND
+TL072 Pin 5 (Non B)  → C2-
+TL072 Pin 6 (Inv B)  → Pin 7 (unity gain buffer)
+TL072 Pin 7 (Out B)  → C3+ → OUTPUT PAD
+TL072 Pin 8 (V+)     → 3.3V + C4
+
+R1 (1MΩ)   → INPUT PAD to C1+/C2+ junction
+R2 (100kΩ) → 3.3V to VREF
+R3 (100kΩ) → VREF to GND
+R4 (10kΩ)  → Pin 2 to GND
+R5 (100kΩ) → Pin 2 to Pin 1
+R6 (47kΩ)  → C3- to GPIO34
+
+ESP32 Connections:
+  GPIO21 → SDA (OLED)
+  GPIO22 → SCL (OLED)
+  GPIO25 → SW (Encoder)
+  GPIO32 → CLK (Encoder)
+  GPIO33 → DT (Encoder)
+  GPIO34 → R6 (Audio ADC)
+  3V3    → 3.3V rail
+  GND    → GND rail
+  VIN    → 5V (from USB or regulator)
+
+
+3PDT FOOTSWITCH WIRING
+======================
+
+        ┌─────────────────────┐
+        │   1     2     3     │
+        │   ○     ○     ○     │
+        │                     │
+        │   4     5     6     │
+        │   ○     ○     ○     │
+        │                     │
+        │   7     8     9     │
+        │   ○     ○     ○     │
+        └─────────────────────┘
+
+Wire connections:
+  Pin 1 → Input Jack TIP
+  Pin 2 → PCB INPUT PAD
+  Pin 4 → Output Jack TIP
+  Pin 5 → PCB OUTPUT PAD
+  Pin 6 → Jumper to Pin 1
+  Pin 7 → LED cathode (-)
+  Pin 8 → GND
+  Pin 9 → 1kΩ resistor → 3.3V
+
+  Pin 3 → Optional: jumper to Pin 1 for always-on tuner sensing
+
+
+ASSEMBLY ORDER
+==============
+
+1. Solder SMD components first (if any)
+2. Solder IC socket for TL072
+3. Solder resistors (R1-R6)
+4. Solder ceramic capacitor (C4)
+5. Solder electrolytic capacitors (C1-C3) - watch polarity!
+6. Solder pin headers (OLED, ESP32 if using headers)
+7. Solder ESP-WROOM-32 module
+8. Insert TL072 into socket
+9. Test PCB before enclosure assembly
+
+ENCLOSURE ASSEMBLY:
+1. Drill all holes in enclosure
+2. File OLED window opening
+3. Mount jacks and footswitch
+4. Mount OLED+Encoder module to lid
+5. Connect wire harness
+6. Mount PCB on standoffs
+7. Connect all wires
+8. Test everything
+9. Close enclosure
+
+
+POWER SUPPLY NOTES
+==================
+
+For 9V pedal power compatibility, add:
+- 2.1mm DC jack (center negative)
+- 7805 regulator (9V→5V) or AMS1117-5.0
+- AMS1117-3.3 (5V→3.3V) for op-amp
+
+Or simpler: USB power only (5V direct to ESP32 VIN)
+
+
+TESTING CHECKLIST
+=================
+
+□ 3.3V rail measures 3.3V (±0.1V)
+□ VREF measures 1.65V (±0.1V)
+□ OLED displays boot screen
+□ Encoder rotation changes menu
+□ Encoder button responds
+□ Guitar input detected (play note)
+□ Output jack passes signal to amp
+□ Footswitch toggles bypass/tuner
+□ LED indicates mode
