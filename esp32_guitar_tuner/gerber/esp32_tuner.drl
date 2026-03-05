@@ -1,22 +1,22 @@
 M48
-; ESP32 Guitar Tuner - Drill File
-; 100mm x 50mm PCB
-FMAT,2
+; ESP32 Guitar Tuner - Excellon Drill File
+; Units: Metric (mm)
+; Board Size: 100mm x 50mm
 METRIC,TZ
-; Drill sizes
-T1C0.80 ; 0.8mm for resistors, caps, IC
-T2C1.00 ; 1.0mm for headers
-T3C1.20 ; 1.2mm for wire pads
-T4C3.20 ; 3.2mm for M3 mounting holes
+; Tool definitions
+T1C0.80
+T2C1.00
+T3C1.20
+T4C3.20
 %
-; Mounting Holes (M3)
 T4
+; Mounting Holes (M3 - 3.2mm)
 X5000Y5000
 X95000Y5000
 X5000Y45000
 X95000Y45000
-; TL072 DIP-8 (0.8mm)
 T1
+; TL072 DIP-8 (0.8mm holes)
 X11190Y16190
 X11190Y18730
 X11190Y21270
@@ -25,7 +25,7 @@ X18810Y23810
 X18810Y21270
 X18810Y18730
 X18810Y16190
-; Resistors R1-R6 (0.8mm)
+; Resistors (0.8mm holes)
 X30000Y12000
 X40160Y12000
 X30000Y8000
@@ -38,7 +38,7 @@ X75000Y12000
 X85160Y12000
 X75000Y8000
 X85160Y8000
-; Capacitors C1-C4 (0.8mm)
+; Capacitors (0.8mm holes)
 X25000Y5000
 X27500Y5000
 X35000Y5000
@@ -47,8 +47,8 @@ X45000Y5000
 X47500Y5000
 X55000Y5000
 X57500Y5000
-; ESP32 Headers (1.0mm)
 T2
+; ESP32 Header Pins (1.0mm holes)
 X63730Y17840
 X63730Y20380
 X63730Y22920
@@ -67,7 +67,7 @@ X66270Y25460
 X66270Y22920
 X66270Y20380
 X66270Y17840
-; OLED Header 7-pin (1.0mm)
+; OLED Header 7-pin (1.0mm holes)
 X42380Y45000
 X44920Y45000
 X47460Y45000
@@ -75,14 +75,14 @@ X50000Y45000
 X52540Y45000
 X55080Y45000
 X57620Y45000
-; Wire Pads - Input (1.2mm)
 T3
+; Wire Pads - Input (1.2mm holes)
 X10000Y3000
 X13810Y3000
-; Wire Pads - Output (1.2mm)
+; Wire Pads - Output (1.2mm holes)
 X20000Y3000
 X23810Y3000
-; Wire Pads - Power (1.2mm)
+; Wire Pads - Power (1.2mm holes)
 X90000Y25000
 X93810Y25000
 M30
