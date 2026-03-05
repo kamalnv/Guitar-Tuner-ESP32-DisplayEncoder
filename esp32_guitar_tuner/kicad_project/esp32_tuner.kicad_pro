@@ -1,0 +1,27 @@
+(kicad_pro (version 1) (generator "kicad")
+  (project
+    (name "esp32_tuner")
+  )
+  (board
+    (design_settings
+      (layer_presets)
+    )
+  )
+  (schematic
+    (legacy_lib_dir "")
+    (legacy_lib_list)
+  )
+  (libraries)
+  (pcbnew
+    (last_paths
+      (gencad "")
+      (idf "")
+      (netlist "")
+      (specctra_dsn "")
+      (step "")
+      (vrml "")
+    )
+    (page_layout_descr_file "")
+  )
+  (text_variables)
+)

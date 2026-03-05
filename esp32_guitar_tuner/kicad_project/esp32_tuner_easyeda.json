@@ -1,0 +1,29 @@
+{
+  "head": {
+    "docType": "3",
+    "editorVersion": "6.5.22",
+    "title": "ESP32 Guitar Tuner PCB",
+    "description": "100mm x 50mm 2-Layer PCB for 125B Enclosure",
+    "c_para": {
+      "Manufacturer": "LionCircuits/PCBPower",
+      "BOM_Manufacturer": "",
+      "BOM_Manufacturer Part": "",
+      "puuid": "esp32-guitar-tuner-v1",
+      "uuid": "a1b2c3d4e5f6"
+    },
+    "x": 0,
+    "y": 0
+  },
+  "canvas": "CA~1000~1000~#FFFFFF~yes~#CCCCCC~5~1000~1000~line~0.5~mm~1~45~~0.5~4000~3000~0~none",
+  "shape": [
+    "TRACK~0.5~1~~4000 3000 4100 3000 4100 3050 4000 3050 4000 3000~gge1~0",
+    "RECT~4000~3000~100~50~1~gge2~0~#000000~none~0~yes~yes"
+  ],
+  "BBox": {
+    "x": 0,
+    "y": 0,
+    "width": 100,
+    "height": 50
+  },
+  "layers": ["TopLayer", "BottomLayer", "TopSilkLayer", "BottomSilkLayer", "TopPasteMaskLayer", "BottomPasteMaskLayer", "TopSolderMaskLayer", "BottomSolderMaskLayer", "BoardOutLine", "Multi-Layer", "Document", "Mechanical"]
+}
